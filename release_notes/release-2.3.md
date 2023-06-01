@@ -3,6 +3,7 @@
 ## 2.3.13
 
 发布日期： 2023 年 6 月 1 日
+
 ### 功能优化
 
 - 优化了因 `thrift_server_max_worker_threads` 设置过小导致 INSERT INTO SELECT 超时场景下的报错信息。 [#21964](https://github.com/StarRocks/starrocks/pull/21964)
