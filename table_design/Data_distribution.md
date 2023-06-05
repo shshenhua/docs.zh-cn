@@ -368,17 +368,19 @@ DISTRIBUTED BY HASH(site_id,city_code) BUCKETS 10;
 
 - 建表时如何设置分桶数量
   
-  - 自动设置分桶数量
+  - 方式一：自动设置分桶数量（推荐）
 
-    自 2.5.6 版本起， StarRocks 能够自动设置分桶数量。假设 BE 数量为 X，StarRocks 推断分桶数量的策略如下：
-    > 如果需要启用该功能，则您需要执行 `ADMIN SET FRONTEND CONFIG ("enable_auto_tablet_distribution" = "true");` 以开启该 FE 动态参数。
+    自 2.5.6 版本起， StarRocks 支持自动设置分桶数量，并且推断分桶数量的策略如下：
 
     ```plaintext
+    // X 为 BE 数量
     X <= 12  tablet_num = 2X
     X <= 24  tablet_num = 1.5X
     X <= 36 tablet_num = 36
     X > 36  tablet_num = min(X, 48)
     ```
+
+    建表示例：
 
     ```SQL
     CREATE TABLE site_access(
@@ -391,31 +393,50 @@ DISTRIBUTED BY HASH(site_id,city_code) BUCKETS 10;
     DISTRIBUTED BY HASH(site_id,city_code); --无需手动设置分桶数量
     ```
 
-  - 手动设置分桶数量
+    如果需要开启该功能，则您需要确保 FE 动态参数 `enable_auto_tablet_distribution` 保持默认值 `true`。
+
+  - 方式二：手动设置分桶数量
   
     自 2.4 版本起，StarRocks 提供了自适应的 Tablet 并行扫描能力，即一个查询中涉及到的任意一个 Tablet 可能是由多个线程并行地分段扫描，减少了 Tablet 数量对查询能力的限制，从而可以简化对分桶数量的设置。简化后，确定分桶数量方式可以是：首先预估每个分区的数据量，然后按照每 10 GB 原始数据一个 Tablet 计算，从而确定分桶数量。
 
-    > **注意**
-    >
-    > 您需要设置全局系统变量 `SET GLOBAL enable_tablet_internal_parallel = true;`，以开启并行扫描 Tablet。
+    如果需要开启并行扫描 Tablet，则您需要确保系统变量 `enable_tablet_internal_parallel` 全局生效 `SET GLOBAL enable_tablet_internal_parallel = true;`。
+
+    ```SQL
+    CREATE TABLE site_access(
+    site_id INT DEFAULT '10',
+    city_code SMALLINT,
+    user_name VARCHAR(32) DEFAULT '',
+    pv BIGINT SUM DEFAULT '0')
+    AGGREGATE KEY(site_id, city_code, user_name)
+    DISTRIBUTED BY HASH(site_id,city_code) BUCKETS 8; --手动设置分桶数量为 8
+    ```
 
 - 新增分区时如何设置分桶数量
-  > **注意**
-  >
-  > 不支持修改已创建分区的分桶数量。
-  
-  - 自动设置分桶数量
 
-      自 2.5.6 版本起，StarRocks 能够自动设置分桶数量。并且 StarRocks 推断新增分区的分桶数量的策略：数据量以最近5个导入的分区中数据量最多的分区来为基准，每 10 GB 原始数据，算一个 Tablet。如果需要启用该功能，则您需要执行 `ADMIN SET FRONTEND CONFIG ("enable_auto_tablet_distribution" = "true");` 以开启该 FE 动态参数。<br>如果 `enable_auto_tablet_distribution` 为 `false`，且您新增分区的时候未指定分桶数量，则新增分区的分桶数量会继承建表时候的分桶数量。
+  - 方式一：自动设置分桶数量（推荐）
 
-  - 手动设置分桶数量
+    自 2.5.6 版本起，StarRocks 能够自动设置分桶数量。并且 StarRocks 推断新增分区的分桶数量的策略为数据量以最近 5 个的分区中数据量最多的分区来为基准，每 10 GB 原始数据，算一个 Tablet。
+
+    如果需要启用该功能，则您需要确保 FE 动态参数 `enable_auto_tablet_distribution` 保持默认值 `true`。如果需要关闭该功能，则您可以执行`ADMIN SET FRONTEND CONFIG ("enable_auto_tablet_distribution" = "false");`，并且新增分区的时候未指定分桶数量，则新增分区的分桶数量会继承建表时的分桶数量。
+
+  - 方式二：手动设置分桶数量
 
     您新增分区的时候，也可以手动指定分桶数量。新增分区的分桶数量的计算方式可以参考如上建表时手动设置分桶数量。
 
     ```SQL
-    ALTER TABLE <table_name> ADD PARTITION <partition_name>
-    [DISTRIBUTED BY HASH (k1[,k2 ...]) [BUCKETS num]];
+    -- 手动创建分区
+    ALTER TABLE <table_name> 
+    ADD PARTITION <partition_name>
+        [DISTRIBUTED BY HASH (k1[,k2 ...]) [BUCKETS num]];
+        
+    -- 动态创建分区
+    ALTER TABLE <table_name> 
+    SET ("dynamic_partition.buckets"="xxx");
     ```
+
+  > **注意**
+  >
+  > 不支持修改已创建分区的分桶数量。
 
 ## 最佳实践
 
