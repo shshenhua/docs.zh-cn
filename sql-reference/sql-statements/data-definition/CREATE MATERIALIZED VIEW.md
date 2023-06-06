@@ -59,6 +59,10 @@ AS
 
 物化视图的分桶方式，形如 `DISTRIBUTED BY HASH (k1[,k2 ...]) [BUCKETS num]`。
 
+> **注意**
+>
+> 自 2.5.7 起 StarRocks 支持自动设置分桶数量，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../../../table_design/Data_distribution.md#确定分桶数量)。
+
 **refresh_moment**（选填）
 
 物化视图的刷新时刻。默认值：`IMMEDIATE`。有效值：
