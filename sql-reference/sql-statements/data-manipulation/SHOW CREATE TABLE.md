@@ -52,7 +52,7 @@ CREATE TABLE example_table
 ENGINE = olap
 AGGREGATE KEY(k1, k2)
 COMMENT "my first starrocks table"
-DISTRIBUTED BY HASH(k1) BUCKETS 10;
+DISTRIBUTED BY HASH(k1);
 ```
 
 查看表`example_table`的建表语句。
