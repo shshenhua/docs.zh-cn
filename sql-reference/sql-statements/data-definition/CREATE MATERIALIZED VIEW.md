@@ -287,7 +287,7 @@ PARTITION p4 VALUES [("19950101"), ("19960101")),
 PARTITION p5 VALUES [("19960101"), ("19970101")),
 PARTITION p6 VALUES [("19970101"), ("19980101")),
 PARTITION p7 VALUES [("19980101"), ("19990101")))
-DISTRIBUTED BY HASH(`lo_orderkey`) BUCKETS 48;
+DISTRIBUTED BY HASH(`lo_orderkey`);
 
 CREATE TABLE IF NOT EXISTS `customer` (
   `c_custkey` int(11) NOT NULL COMMENT "",
@@ -301,7 +301,7 @@ CREATE TABLE IF NOT EXISTS `customer` (
 ) ENGINE=OLAP
 DUPLICATE KEY(`c_custkey`)
 COMMENT "OLAP"
-DISTRIBUTED BY HASH(`c_custkey`) BUCKETS 12;
+DISTRIBUTED BY HASH(`c_custkey`);
 
 CREATE TABLE IF NOT EXISTS `dates` (
   `d_datekey` int(11) NOT NULL COMMENT "",
@@ -337,7 +337,7 @@ CREATE TABLE IF NOT EXISTS `supplier` (
 ) ENGINE=OLAP
 DUPLICATE KEY(`s_suppkey`)
 COMMENT "OLAP"
-DISTRIBUTED BY HASH(`s_suppkey`) BUCKETS 12;
+DISTRIBUTED BY HASH(`s_suppkey`);
 
 CREATE TABLE IF NOT EXISTS `part` (
   `p_partkey` int(11) NOT NULL COMMENT "",
@@ -352,7 +352,7 @@ CREATE TABLE IF NOT EXISTS `part` (
 ) ENGINE=OLAP
 DUPLICATE KEY(`p_partkey`)
 COMMENT "OLAP"
-DISTRIBUTED BY HASH(`p_partkey`) BUCKETS 12;
+DISTRIBUTED BY HASH(`p_partkey`);
 
 create table orders ( 
     dt date NOT NULL, 
@@ -370,7 +370,7 @@ PRIMARY KEY (dt, order_id)
 PARTITION BY RANGE(`dt`) 
 ( PARTITION p20210820 VALUES [('2021-08-20'), ('2021-08-21')), 
 PARTITION p20210821 VALUES [('2021-08-21'), ('2021-08-22')) ) 
-DISTRIBUTED BY HASH(order_id) BUCKETS 4 
+DISTRIBUTED BY HASH(order_id)
 PROPERTIES (
     "replication_num" = "3", 
     "enable_persistent_index" = "true"
@@ -381,7 +381,7 @@ PROPERTIES (
 
 ```SQL
 CREATE MATERIALIZED VIEW lo_mv1
-DISTRIBUTED BY HASH(`lo_orderkey`) BUCKETS 10
+DISTRIBUTED BY HASH(`lo_orderkey`)
 REFRESH ASYNC
 AS
 select
@@ -400,7 +400,7 @@ order by lo_orderkey;
 ```SQL
 CREATE MATERIALIZED VIEW lo_mv2
 PARTITION BY `lo_orderdate`
-DISTRIBUTED BY HASH(`lo_orderkey`) BUCKETS 10
+DISTRIBUTED BY HASH(`lo_orderkey`)
 REFRESH ASYNC START('2023-07-01 10:00:00') EVERY (interval 1 day)
 AS
 select
@@ -417,7 +417,7 @@ order by lo_orderkey;
 # 使用 date_trunc 函数将 `dt` 列截断至以月为单位进行分区。
 CREATE MATERIALIZED VIEW order_mv1
 PARTITION BY date_trunc('month', `dt`)
-DISTRIBUTED BY HASH(`order_id`) BUCKETS 10
+DISTRIBUTED BY HASH(`order_id`)
 REFRESH ASYNC START('2023-07-01 10:00:00') EVERY (interval 1 day)
 AS
 select
@@ -435,7 +435,7 @@ group by dt, order_id, user_id;
 
 ```SQL
 CREATE MATERIALIZED VIEW flat_lineorder
-DISTRIBUTED BY HASH(`lo_orderkey`) BUCKETS 48
+DISTRIBUTED BY HASH(`lo_orderkey`)
 REFRESH MANUAL
 AS
 SELECT
