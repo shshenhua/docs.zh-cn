@@ -3,7 +3,7 @@
 建表时，您需要通过设置分区和分桶，指定数据分布方式，并且建议您合理设置分区和分桶，实现数据均匀的分布。数据分布是指数据划分为子集，并按一定规则均衡地分布在不同节点上，能够有效裁剪数据扫描量，最大限度地利用集群的并发性能，从而提升查询性能。
 > **说明**
 >
-> 自 2.5.6 版本起，StarRocks 支持自动设置分桶数量。
+> 自 2.5.7 版本起 StarRocks 支持自动设置分桶数量，您无需手动设置分桶数量。
 
 ## 数据分布概览
 
@@ -41,8 +41,12 @@ CREATE TABLE site_access(
     pv BIGINT SUM DEFAULT '0'
 )
 AGGREGATE KEY(site_id, city_code, user_name)
-DISTRIBUTED BY HASH(site_id) BUCKETS 10;
+DISTRIBUTED BY HASH(site_id);
 ```
+
+> **注意**
+>
+> 自 2.5.7 起 StarRocks 支持自动设置分桶数量，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../Data_distribution.md#确定分桶数量)。
 
 采用Range+Hash组合分布的建表语句如下，其中分区键为 `event_day`，分桶键为 `site_id`：
 
@@ -61,8 +65,12 @@ PARTITION BY RANGE(event_day)
     PARTITION p2 VALUES LESS THAN ("2020-02-29"),
     PARTITION p3 VALUES LESS THAN ("2020-03-31")
 )
-DISTRIBUTED BY HASH(site_id) BUCKETS 10;
+DISTRIBUTED BY HASH(site_id);
 ```
+
+> **注意**
+>
+> 自 2.5.7 起 StarRocks 支持自动设置分桶数量，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](#确定分桶数量)。
 
 #### 分区
 
@@ -120,7 +128,7 @@ PARTITION BY RANGE(event_day)
     PARTITION p2 VALUES LESS THAN ("2020-02-29"),
     PARTITION p3 VALUES LESS THAN ("2020-03-31")
 )
-DISTRIBUTED BY HASH(site_id) BUCKETS 10;
+DISTRIBUTED BY HASH(site_id);
 ```
 
 ### 批量创建分区
@@ -148,7 +156,7 @@ DUPLICATE KEY(datekey, site_id, city_code, user_name)
 PARTITION BY RANGE (datekey) (
     START ("2021-01-01") END ("2021-01-04") EVERY (INTERVAL 1 DAY)
 )
-DISTRIBUTED BY HASH(site_id) BUCKETS 10
+DISTRIBUTED BY HASH(site_id)
 PROPERTIES (
     "replication_num" = "3" 
 );
@@ -183,7 +191,7 @@ PARTITION BY RANGE (datekey) (
     START ("2021-01-01") END ("2021-05-01") EVERY (INTERVAL 1 MONTH),
     START ("2021-05-01") END ("2021-05-04") EVERY (INTERVAL 1 DAY)
 )
-DISTRIBUTED BY HASH(site_id) BUCKETS 10
+DISTRIBUTED BY HASH(site_id)
 PROPERTIES (
     "replication_num" = "3"
 );
@@ -226,7 +234,7 @@ DUPLICATE KEY(datekey, site_id, city_code, user_name)
 PARTITION BY RANGE (datekey) (
     START ("1") END ("5") EVERY (1)
 )
-DISTRIBUTED BY HASH(site_id) BUCKETS 10
+DISTRIBUTED BY HASH(site_id)
 PROPERTIES (
     "replication_num" = "3"
 );
@@ -263,7 +271,7 @@ ADD PARTITIONS START ("2021-01-04") END ("2021-01-06") EVERY (INTERVAL 1 DAY);
 ```SQL
 ALTER TABLE site_access
 ADD PARTITION p4 VALUES LESS THAN ("2020-04-30")
-DISTRIBUTED BY HASH(site_id) BUCKETS 20;
+DISTRIBUTED BY HASH(site_id);
 ```
 
 #### 删除分区
@@ -329,7 +337,7 @@ PARTITION BY RANGE(event_day)
     PARTITION p2 VALUES LESS THAN ("2020-02-29"),
     PARTITION p3 VALUES LESS THAN ("2020-03-31")
 )
-DISTRIBUTED BY HASH(site_id) BUCKETS 10;
+DISTRIBUTED BY HASH(site_id);
 ```
 
 如上示例中，`site_access` 表采用 `site_id` 作为分桶键，其原因在于， `site_id` 为高基数列。此外，针对 `site_access` 表的查询请求，基本上都以站点作为查询过滤条件，采用 `site_id` 作为分桶键，还可以在查询时裁剪掉大量无关分桶。如下查询中，10 个分桶中的 9 个分桶被裁减，因而系统只需要扫描 `site_access` 表中 1/10 的数据：
@@ -351,7 +359,7 @@ CREATE TABLE site_access
     pv BIGINT SUM DEFAULT '0'
 )
 AGGREGATE KEY(site_id, city_code, user_name)
-DISTRIBUTED BY HASH(site_id,city_code) BUCKETS 10;
+DISTRIBUTED BY HASH(site_id,city_code);
 ```
 
 在实际使用中，您可以依据自身的业务特点选择以上两种分桶方式。采用 `site_id` 的分桶方式对于短查询十分有利，能够减少节点之间的数据交换，提高集群整体性能；采用 `site_id`、`city_code` 的组合分桶方式对于长查询有利，能够利用分布式集群的整体并发性能。
@@ -393,7 +401,7 @@ DISTRIBUTED BY HASH(site_id,city_code) BUCKETS 10;
     DISTRIBUTED BY HASH(site_id,city_code); --无需手动设置分桶数量
     ```
 
-    如果需要开启该功能，则您需要确保 FE 动态参数 `enable_auto_tablet_distribution` 保持默认值 `true`。
+    如果需要开启该功能，则您需要确保 FE 动态参数 `enable_auto_tablet_distribution` 为 `true`。
 
   - 方式二：手动设置分桶数量
   
@@ -402,13 +410,13 @@ DISTRIBUTED BY HASH(site_id,city_code) BUCKETS 10;
     如果需要开启并行扫描 Tablet，则您需要确保系统变量 `enable_tablet_internal_parallel` 全局生效 `SET GLOBAL enable_tablet_internal_parallel = true;`。
 
     ```SQL
-    CREATE TABLE site_access(
+    CREATE TABLE site_access (
     site_id INT DEFAULT '10',
     city_code SMALLINT,
     user_name VARCHAR(32) DEFAULT '',
     pv BIGINT SUM DEFAULT '0')
     AGGREGATE KEY(site_id, city_code, user_name)
-    DISTRIBUTED BY HASH(site_id,city_code) BUCKETS 8; --手动设置分桶数量为 8
+    DISTRIBUTED BY HASH(site_id,city_code) BUCKETS 10; --手动设置分桶数量为 10
     ```
 
 - 新增分区时如何设置分桶数量
@@ -434,9 +442,9 @@ DISTRIBUTED BY HASH(site_id,city_code) BUCKETS 10;
     SET ("dynamic_partition.buckets"="xxx");
     ```
 
-  > **注意**
-  >
-  > 不支持修改已创建分区的分桶数量。
+> **注意**
+>
+> 不支持修改已创建分区的分桶数量。
 
 ## 最佳实践
 

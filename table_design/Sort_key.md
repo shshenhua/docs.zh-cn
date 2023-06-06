@@ -50,7 +50,7 @@ CREATE TABLE site_access_duplicate
     pv BIGINT DEFAULT '0'
 )
 DUPLICATE KEY(site_id, city_code)
-DISTRIBUTED BY HASH(site_id) BUCKETS 10;
+DISTRIBUTED BY HASH(site_id);
 ```
 
 ### 聚合模型
@@ -68,7 +68,7 @@ CREATE TABLE site_access_aggregate
     pv BIGINT SUM DEFAULT '0'
 )
 AGGREGATE KEY(site_id, city_code)
-DISTRIBUTED BY HASH(site_id) BUCKETS 10;
+DISTRIBUTED BY HASH(site_id);
 ```
 
 >**注意**
@@ -90,7 +90,7 @@ CREATE TABLE site_access_unique
     pv BIGINT DEFAULT '0'
 )
 UNIQUE KEY(site_id, city_code)
-DISTRIBUTED BY HASH(site_id) BUCKETS 10;
+DISTRIBUTED BY HASH(site_id);
 ```
 
 ### 主键模型
@@ -108,7 +108,7 @@ CREATE TABLE site_access_primary
     pv BIGINT DEFAULT '0'
 )
 PRIMARY KEY(site_id)
-DISTRIBUTED BY HASH(site_id) BUCKETS 10
+DISTRIBUTED BY HASH(site_id)
 ORDER BY(site_id,city_code);
 ```
 
