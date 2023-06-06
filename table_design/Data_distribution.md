@@ -378,15 +378,7 @@ DISTRIBUTED BY HASH(site_id,city_code);
   
   - 方式一：自动设置分桶数量（推荐）
 
-    自 2.5.6 版本起， StarRocks 支持自动设置分桶数量，并且推断分桶数量的策略如下：
-
-    ```plaintext
-    // X 为 BE 数量
-    X <= 12  tablet_num = 2X
-    X <= 24  tablet_num = 1.5X
-    X <= 36 tablet_num = 36
-    X > 36  tablet_num = min(X, 48)
-    ```
+    自 2.5.7 版本起， StarRocks 支持根据机器资源和数据量自动设置分区的分桶数量。
 
     建表示例：
 
@@ -423,7 +415,7 @@ DISTRIBUTED BY HASH(site_id,city_code);
 
   - 方式一：自动设置分桶数量（推荐）
 
-    自 2.5.6 版本起，StarRocks 能够自动设置分桶数量。并且 StarRocks 推断新增分区的分桶数量的策略为数据量以最近 5 个的分区中数据量最多的分区来为基准，每 10 GB 原始数据，算一个 Tablet。
+    自 2.5.7 版本起， StarRocks 支持根据机器资源和数据量自动设置分区的分桶数量。
 
     如果需要启用该功能，则您需要确保 FE 动态参数 `enable_auto_tablet_distribution` 保持默认值 `true`。如果需要关闭该功能，则您可以执行`ADMIN SET FRONTEND CONFIG ("enable_auto_tablet_distribution" = "false");`，并且新增分区的时候未指定分桶数量，则新增分区的分桶数量会继承建表时的分桶数量。
 
