@@ -86,7 +86,7 @@ StarRocks 的主键模型目前支持 UPSERT 和 DELETE 操作，不支持区分
 
     > **注意**
     >
-    > 自 2.5.7 版本起，StarRocks 支持自动设置分桶数量，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
+    > 自 2.5.7 版本起，StarRocks 支持在建表和新增分区时自动设置分桶数量 (BUCKETS)，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
 
    b. 向 `table1` 表中插入一条数据，如下所示：
 
@@ -246,7 +246,7 @@ MySQL [test_db]> SELECT * FROM table1;
 
    > **注意**
    >
-   > 自 2.5.7 版本起，StarRocks 支持自动设置分桶数量，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
+   > 自 2.5.7 版本起，StarRocks 支持在建表和新增分区时自动设置分桶数量 (BUCKETS)，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
 
    b. 向 `table2` 表中插入数据，如下所示：
 
@@ -355,7 +355,7 @@ MySQL [test_db]> SELECT * FROM table2;
 
    > **注意**
    >
-   > 自 2.5.7 版本起，StarRocks 支持自动设置分桶数量，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
+   > 自 2.5.7 版本起，StarRocks 支持在建表和新增分区时自动设置分桶数量 (BUCKETS)，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
 
    b. 向 `table3` 表中插入数据，如下所示：
 
@@ -472,7 +472,7 @@ MySQL [test_db]> SELECT * FROM table3;
 
    > **注意**
    >
-   > 自 2.5.7 版本起，StarRocks 支持自动设置分桶数量，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
+   > 自 2.5.7 版本起，StarRocks 支持在建表和新增分区时自动设置分桶数量 (BUCKETS)，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
 
    b. 向 `table4` 表中插入一条数据，如下所示：
 
@@ -608,7 +608,7 @@ MySQL [test_db]> SELECT * FROM table4;
 
     > **注意**
     >
-    > 自 2.5.7 版本起，StarRocks 支持自动设置分桶数量，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
+    > 自 2.5.7 版本起，StarRocks 支持在建表和新增分区时自动设置分桶数量 (BUCKETS)，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
 
    b. 向 `table5` 表中插入两条数据，如下所示：
 

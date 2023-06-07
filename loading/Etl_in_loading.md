@@ -58,7 +58,7 @@ StarRocks 支持在导入数据的过程中实现数据转换。
 
   > **注意**
   >
-  > 自 2.5.7 版本起，StarRocks 支持自动设置分桶数量，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
+  > 自 2.5.7 版本起，StarRocks 支持在建表和新增分区时自动设置分桶数量 (BUCKETS)，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
 
    b. 创建一张名为 `table2` 的表，包含 `date`、`year`、`month` 和 `day` 四列，如下所示：
 
