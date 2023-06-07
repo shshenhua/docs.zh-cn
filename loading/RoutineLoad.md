@@ -306,7 +306,7 @@ CREATE TABLE sensor.sensor_log (
     `sensor_type` varchar(26) NOT NULL COMMENT "sensor type"
 ) 
 ENGINE=OLAP 
-PRIMARY KEY (id) 
+DUPLICATE KEY (id) 
 DISTRIBUTED BY HASH(`id`); 
 ```
 
