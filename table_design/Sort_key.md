@@ -53,6 +53,11 @@ DUPLICATE KEY(site_id, city_code)
 DISTRIBUTED BY HASH(site_id);
 ```
 
+> **注意**
+>
+> 自 2.5.7 起 StarRocks 支持自动设置分桶数量，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../Data_distribution.md#确定分桶数量)。
+
+
 ### 聚合模型
 
 创建一个名为 `site_access_aggregate` 的聚合模型表，包含 `site_id`、`city_code`、`user_id` 和 `pv` 四列，其中 `site_id` 和 `city_code` 为排序列。

@@ -318,6 +318,10 @@ PROPERTIES (
 );
 ```
 
+> 注意
+>
+> 自 2.5.7 版本起，StarRocks 支持自动设置分桶数量，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
+
 除了常规表 PROPERTIES 之外，您还需要在创建表时指定以下 PROPERTIES：
 
 | **属性**                | **描述**                                                     |
