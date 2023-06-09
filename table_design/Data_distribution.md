@@ -3,7 +3,7 @@
 建表时，您需要通过设置分区和分桶，指定数据分布方式，并且建议您合理设置分区和分桶，实现数据均匀的分布。数据分布是指数据划分为子集，并按一定规则均衡地分布在不同节点上，能够有效裁剪数据扫描量，最大限度地利用集群的并发性能，从而提升查询性能。
 > **说明**
 >
-> 自 2.5.7 版本起，StarRocks 支持在建表和新增分区时自动设置分桶数量 (BUCKETS)，您无需手动设置分桶数量。
+> 自 2.5.7 版本起，StarRocks 支持在建表和新增分区时自动设置分桶数量 (BUCKETS)，您无需手动设置分桶数量。如果自动设置分桶数量后性能未能达到预期，并且您比较熟悉分桶机制，则您也可以[手动设置分桶数量](#确定分桶数量)。
 
 ## 数据分布概览
 
@@ -393,19 +393,19 @@ DISTRIBUTED BY HASH(site_id,city_code);
     建表后，您可以执行 [SHOW CREATE TABLE](../sql-reference/sql-statements/data-manipulation/SHOW%20CREATE%20TABLE.md) 来查看 StarRock 自动设置的分桶数量。
 
   - 方式二：手动设置分桶数量
-  
+
     自 2.4 版本起，StarRocks 提供了自适应的 Tablet 并行扫描能力，即一个查询中涉及到的任意一个 Tablet 可能是由多个线程并行地分段扫描，减少了 Tablet 数量对查询能力的限制，从而可以简化对分桶数量的设置。简化后，确定分桶数量方式可以是：首先预估每个分区的数据量，然后按照每 10 GB 原始数据一个 Tablet 计算，从而确定分桶数量。
 
     如果需要开启并行扫描 Tablet，则您需要确保系统变量 `enable_tablet_internal_parallel` 全局生效 `SET GLOBAL enable_tablet_internal_parallel = true;`。
 
     ```SQL
     CREATE TABLE site_access (
-    site_id INT DEFAULT '10',
-    city_code SMALLINT,
-    user_name VARCHAR(32) DEFAULT '',
-    pv BIGINT SUM DEFAULT '0')
+        site_id INT DEFAULT '10',
+        city_code SMALLINT,
+        user_name VARCHAR(32) DEFAULT '',
+        pv BIGINT SUM DEFAULT '0')
     AGGREGATE KEY(site_id, city_code, user_name)
-    DISTRIBUTED BY HASH(site_id,city_code) BUCKETS 10; --手动设置分桶数量为 10
+    DISTRIBUTED BY HASH(site_id,city_code) BUCKETS 30; -- 假设导入一个分区的原始数据量为 300 GB，则按照每 10 GB 原始数据一个 Tablet，则分桶数量可以设置为 30。
     ```
 
 - 新增分区时如何设置分桶数量
@@ -427,7 +427,7 @@ DISTRIBUTED BY HASH(site_id,city_code);
     ADD PARTITION <partition_name>
         [DISTRIBUTED BY HASH (k1[,k2 ...]) [BUCKETS num]];
         
-    -- 动态创建分区
+    -- 手动设置动态分区的默认分桶数量
     ALTER TABLE <table_name> 
     SET ("dynamic_partition.buckets"="xxx");
     ```
