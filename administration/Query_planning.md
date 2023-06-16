@@ -400,12 +400,12 @@ CREATE MATERIALIZED VIEW mv
   ```
 
 * Broadcast Join
+  
+  如果表 A 是个大表，表 B 是个小表，则您可以设置 Join Hint 为 Broadcast Join。小表 B 的数据全量广播到表 A 数据所在的机器上，再进行 Join 操作。Broadcast Join 相比较于 Shuffle Join，节省了 Shuffle 表 A 数据的开销 。
 
- 如果表 A 是个大表，表 B 是个小表，则您可以设置 Join Hint 为 Broadcast Join。小表 B 的数据全量广播到表 A 数据所在的机器上，再进行 Join 操作。Broadcast Join 相比较于 Shuffle Join，节省了 Shuffle 表 A 数据的开销 。
-
- ```SQL
- select k1 from t1 join [BROADCAST] t2 on t1.k1 = t2.k2 group by t2.k2;
- ```
+  ```SQL
+  select k1 from t1 join [BROADCAST] t2 on t1.k1 = t2.k2 group by t2.k2;
+  ```
 
 * Bucket Shuffle Join
   
