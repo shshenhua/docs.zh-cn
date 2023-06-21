@@ -64,7 +64,7 @@ Routine Load 目前支持从 Kakfa 集群中消费 CSV、JSON、Avro (自 v3.0.1
 
       > **说明**
       >
-      > StarRocks 可以通过安全认证机制，包括 SASL_SSL 认证、SASL 认证和 SSL 认证，以及无认证的方式连接 Kafka。本文以无认证的方式连接 Kafka 为例进行说明，如果您需要通过安全认证机制连接 Kafka，请参见 [CREATE ROUTINE LOAD](../sql-reference/sql-statements/data-manipulation/CREATE%20ROUTINE%20LOAD.md)。
+      > StarRocks 可以通过安全认证机制，包括 SASL_SSL 认证、SASL 认证和 SSL 认证，以及无认证的方式连接 Kafka。本文以无认证的方式连接 Kafka 为例进行说明，如果您需要通过安全认证机制连接 Kafka，请参见[CREATE ROUTINE LOAD](../sql-reference/sql-statements/data-manipulation/CREATE%20ROUTINE%20LOAD.md)。
 
 4. **持续生成新的导入任务，不间断地导入数据**
 
@@ -111,8 +111,12 @@ CREATE TABLE example_db.example_tbl1 (
 ) 
 ENGINE=OLAP 
 DUPLICATE KEY (order_id,pay_dt) 
-DISTRIBUTED BY HASH(`order_id`) BUCKETS 5; 
+DISTRIBUTED BY HASH(`order_id`); 
 ```
+
+> **注意**
+>
+> 自 2.5.7 版本起，StarRocks 支持在建表和新增分区时自动设置分桶数量 (BUCKETS)，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
 
 #### 导入作业
 
@@ -220,8 +224,12 @@ CREATE TABLE `example_tbl2` (
 )
 ENGINE=OLAP
 AGGREGATE KEY(`commodity_id`,`customer_name`,`country`,`pay_time`,`pay_dt`) 
-DISTRIBUTED BY HASH(`commodity_id`) BUCKETS 5; 
+DISTRIBUTED BY HASH(`commodity_id`); 
 ```
+
+> **注意**
+>
+> 自 2.5.7 版本起，StarRocks 支持在建表和新增分区时自动设置分桶数量 (BUCKETS)，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
 
 #### 导入作业
 
@@ -245,7 +253,7 @@ FROM KAFKA
 );
 ```
 
-提交导入作业后，您可以执行 [SHOW ROUTINE LOAD](../sql-reference/sql-statements/data-manipulation/SHOW%20ROUTINE%20LOAD.md)，查看导入作业执行情况。
+提交导入作业后，您可以执行  [SHOW ROUTINE LOAD](../sql-reference/sql-statements/data-manipulation/SHOW%20ROUTINE%20LOAD.md)，查看导入作业执行情况。
 
 - **数据格式**
 
@@ -295,7 +303,7 @@ FROM KAFKA
 
 #### 目标数据库和表
 
-根据 Avro 数据中需要导入的字段，在 StarRocks 集群的目标数据库 `example_db` 中创建表 `sensor_log`。表的列名与 Avro 数据的字段名保持一致。两者的数据类型映射关系，请参见[数据类型映射](#数据类型映射)。
+根据 Avro 数据中需要导入的字段，在 StarRocks 集群的目标数据库 `sensor` 中创建表 `sensor_log`。表的列名与 Avro 数据的字段名保持一致。两者的数据类型映射关系，请参见[数据类型映射](#数据类型映射)。
 
 ```SQL
 CREATE TABLE  example_db.sensor_log ( 
@@ -307,8 +315,12 @@ CREATE TABLE  example_db.sensor_log (
 ) 
 ENGINE=OLAP 
 DUPLICATE KEY (id) 
-DISTRIBUTED BY HASH(`id`) BUCKETS 5; 
+DISTRIBUTED BY HASH(`id`); 
 ```
+
+> **注意**
+>
+> 自 2.5.7 版本起，StarRocks 支持在建表和新增分区时自动设置分桶数量 (BUCKETS)，您无需手动设置分桶数量。更多信息，请参见 [确定分桶数量](../table_design/Data_distribution.md#确定分桶数量)。
 
 #### 导入作业
 
