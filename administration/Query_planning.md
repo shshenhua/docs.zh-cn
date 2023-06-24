@@ -373,9 +373,9 @@ CREATE MATERIALIZED VIEW mv
     AS SELECT /*+ SET_VAR(query_timeout=500) */ * from dual;
 ```
 
-### Join  Hint
+### Join Hint
 
-针对多表关联查询，优化器一般会主动选择最优的 Join 执行方式。在特殊情况下，您也可以使用 Join  Hint 显式地向优化器建议 Join 执行方式、以及禁用 Join Reorder。目前 Join  Hint 支持的 Join 执行方式有 Shuffle Join、Broadcast Join、Bucket Shuffle Join 和 Colocate Join。
+针对多表关联查询，优化器一般会主动选择最优的 Join 执行方式。在特殊情况下，您也可以使用 Join Hint 显式地向优化器建议 Join 执行方式、以及禁用 Join Reorder。目前 Join Hint 支持的 Join 执行方式有 Shuffle Join、Broadcast Join、Bucket Shuffle Join 和 Colocate Join。
 
 当使用 Join Hint 时，优化器不会进行 Join Reorder，因此您需要确保右表为较小的表。并且当您建议 Join 执行方式为 [Colocate Join](../../xxx) 或者 Bucket Shuffle Join 时，您需要确保表的数据分布情况满足这两种 Join 执行方式的要求，否则所建议的 Join 执行方式不生效。
 
@@ -387,13 +387,13 @@ CREATE MATERIALIZED VIEW mv
 
 > **说明**
 >
-> 使用 Join  Hint 时大小写不敏感。
+> 使用 Join Hint 时大小写不敏感。
 
 #### 示例
 
 * Shuffle Join
 
-  如果需要将表 A、B 中分桶键取值相同的数据行  Shuffle  到相同机器上，再进行 Join 操作，则您可以设置 Join Hint 为 Shuffle Join。
+  如果需要将表 A、B 中分桶键取值相同的数据行 Shuffle 到相同机器上，再进行 Join 操作，则您可以设置 Join Hint 为 Shuffle Join。
 
   ```SQL
   select k1 from t1 join [SHUFFLE] t2 on t1.k1 = t2.k2 group by t2.k2;
@@ -425,7 +425,7 @@ CREATE MATERIALIZED VIEW mv
 
 ### 查看实际的 Join 执行方式
 
-通过 `EXPLAIN` 命令来查看 Join Hint 是否生效。如果返回结果所显示的 Join  执行方式符合 Join Hint，则表示 Join Hint 生效。
+通过 `EXPLAIN` 命令来查看 Join Hint 是否生效。如果返回结果所显示的 Join 执行方式符合 Join Hint，则表示 Join Hint 生效。
 
 ```SQL
 EXPLAIN select k1 from t1 join [COLOCATE] t2 on t1.k1 = t2.k2 group by t2.k2;
