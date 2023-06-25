@@ -21,7 +21,7 @@ Iceberg Catalog 是一种 External Catalog。通过 Iceberg Catalog，您不需�
   - Parquet 文件支持 SNAPPY、LZ4、ZSTD、GZIP 和 NO_COMPRESSION 压缩格式。
   - ORC 文件支持 ZLIB、SNAPPY、LZO、LZ4、ZSTD 和 NO_COMPRESSION 压缩格式。
 
-- Iceberg Catalog 支持查询 v1 表数据。自 3.0 版本起支持查询 ORC 格式的 v2 表数据。
+- Iceberg Catalog 支持查询 v1 表数据。自 3.0 版本起支持查询 ORC 格式的 v2 表数据，自 3.1 版本起支持查询 Parquet 格式的 v2 表数据。
 
 ## 准备工作
 
@@ -74,16 +74,15 @@ PROPERTIES
 )
 ```
 
-参见 [CREATE EXTERNAL CATALOG](../../sql-reference/sql-statements/data-definition/CREATE%20EXTERNAL%20CATALOG.md)。
-
 ### 参数说明
 
 #### catalog_name
 
-Iceberg Catalog 的名称。命名规则如下：
+Iceberg Catalog 的名称。命名要求如下：
 
-- 可以包含字母、数字 0 到 9 和下划线 (_)，并且必须以字母开头。
-- 长度不能超过 64 个字符。
+- 必须由字母 (a-z 或 A-Z)、数字 (0-9) 或下划线 (_) 组成，且只能以字母开头。
+- 总长度不能超过 1023 个字符。
+- Catalog 名称大小写敏感。
 
 #### comment
 
@@ -122,7 +121,7 @@ StarRocks 访问 Iceberg 集群元数据服务的相关参数配置。
 - 基于 Instance Profile 进行认证和鉴权
 
   ```SQL
-  "hive.metastore.type" = "glue",
+  "iceberg.catalog.type" = "glue",
   "aws.glue.use_instance_profile" = "true",
   "aws.glue.region" = "<aws_glue_region>"
   ```
@@ -130,7 +129,7 @@ StarRocks 访问 Iceberg 集群元数据服务的相关参数配置。
 - 基于 Assumed Role 进行认证和鉴权
 
   ```SQL
-  "hive.metastore.type" = "glue",
+  "iceberg.catalog.type" = "glue",
   "aws.glue.use_instance_profile" = "true",
   "aws.glue.iam_role_arn" = "<iam_role_arn>",
   "aws.glue.region" = "<aws_glue_region>"
@@ -149,7 +148,7 @@ StarRocks 访问 Iceberg 集群元数据服务的相关参数配置。
 
 | 参数                          | 是否必须 | 说明                                                         |
 | ----------------------------- | -------- | ------------------------------------------------------------ |
-| hive.metastore.type           | 是       | Iceberg 集群所使用的元数据服务的类型。设置为 `glue`。           |
+| iceberg.catalog.type          | 是       | Iceberg 集群所使用的元数据服务的类型。设置为 `glue`。           |
 | aws.glue.use_instance_profile | 是       | 指定是否开启 Instance Profile 和 Assumed Role 两种鉴权方式。取值范围：`true` 和 `false`。默认值：`false`。 |
 | aws.glue.iam_role_arn         | 否       | 有权限访问 AWS Glue Data Catalog 的 IAM Role 的 ARN。采用 Assumed Role 鉴权方式访问 AWS Glue 时，必须指定此参数。 |
 | aws.glue.region               | 是       | AWS Glue Data Catalog 所在的地域。示例：`us-west-1`。        |
@@ -476,7 +475,7 @@ Iceberg Catalog 从 3.0 版本起支持 Google GCS。
       "type" = "iceberg",
       "aws.s3.use_instance_profile" = "true",
       "aws.s3.region" = "us-west-2",
-      "hive.metastore.type" = "glue",
+      "iceberg.catalog.type" = "glue",
       "aws.glue.use_instance_profile" = "true",
       "aws.glue.region" = "us-west-2"
   );
@@ -508,7 +507,7 @@ Iceberg Catalog 从 3.0 版本起支持 Google GCS。
       "aws.s3.use_instance_profile" = "true",
       "aws.s3.iam_role_arn" = "arn:aws:iam::081976408565:role/test_s3_role",
       "aws.s3.region" = "us-west-2",
-      "hive.metastore.type" = "glue",
+      "iceberg.catalog.type" = "glue",
       "aws.glue.use_instance_profile" = "true",
       "aws.glue.iam_role_arn" = "arn:aws:iam::081976408565:role/test_glue_role",
       "aws.glue.region" = "us-west-2"
@@ -543,7 +542,7 @@ Iceberg Catalog 从 3.0 版本起支持 Google GCS。
       "aws.s3.access_key" = "<iam_user_access_key>",
       "aws.s3.secret_key" = "<iam_user_secret_key>",
       "aws.s3.region" = "us-west-2",
-      "hive.metastore.type" = "glue",
+      "iceberg.catalog.type" = "glue",
       "aws.glue.use_instance_profile" = "false",
       "aws.glue.access_key" = "<iam_user_access_key>",
       "aws.glue.secret_key" = "<iam_user_secret_key>",

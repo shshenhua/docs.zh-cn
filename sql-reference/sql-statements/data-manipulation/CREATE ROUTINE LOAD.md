@@ -10,7 +10,8 @@ Routine Load 支持消费 Kafka 中 CSV、JSON、Avro (自 v3.0.1) 格式数据�
 
 > **说明**
 >
-> Routine Load 的应用场景、基本原理和基本操作，请参见 [从 Apache Kafka® 持续导入](../../../loading/RoutineLoad.md)。
+> - Routine Load 的应用场景、基本原理和基本操作，请参见 [从 Apache Kafka® 持续导入](../../../loading/RoutineLoad.md)。
+> - Routine Load 操作需要目标表的 INSERT 权限。如果您的用户账号没有 INSERT 权限，请参考 [GRANT](../account-management/GRANT.md) 给用户赋权。
 
 ## 语法
 
@@ -421,17 +422,18 @@ COLUMNS TERMINATED BY ",",
 COLUMNS (order_id, pay_dt, customer_name, nationality, gender, price)
 PROPERTIES
 (
-"property.security.protocol" = "ssl", -- 使用 SSL 加密
-"property.ssl.ca.location" = "FILE:ca-cert", -- CA 证书的位置
--- 如果 Kafka Server 端开启了 Client 身份认证，则还需设置如下三个参数：
-"property.ssl.certificate.location" = "FILE:client.pem", -- Client 的 Public Key 的位置
-"property.ssl.key.location" = "FILE:client.key", -- Client 的 Private Key 的位置
-"property.ssl.key.password" = "abcdefg" -- Client 的 Private Key 的密码
+"desired_concurrent_number" = "5"
 )
 FROM KAFKA
 (
     "kafka_broker_list" ="<kafka_broker1_ip>:<kafka_broker1_port>,<kafka_broker2_ip>:<kafka_broker2_port>",
-    "kafka_topic" = "ordertest1"
+    "kafka_topic" = "ordertest1",
+    "property.security.protocol" = "ssl", -- 使用 SSL 加密
+    "property.ssl.ca.location" = "FILE:ca-cert", -- CA 证书的位置
+    -- 如果 Kafka Server 端开启了 Client 身份认证，则还需设置如下三个参数：
+    "property.ssl.certificate.location" = "FILE:client.pem", -- Client 的 Public Key 的位置
+    "property.ssl.key.location" = "FILE:client.key", -- Client 的 Private Key 的位置
+    "property.ssl.key.password" = "abcdefg" -- Client 的 Private Key 的密码
 );
 ```
 

@@ -70,22 +70,22 @@ CREATE EXTERNAL CATALOG <catalog_name>
 PROPERTIES
 (
     "type" = "hive",
+    GeneralParams,
     MetastoreParams,
     StorageCredentialParams,
     MetadataUpdateParams
 )
 ```
 
-参见 [CREATE EXTERNAL CATALOG](../../sql-reference/sql-statements/data-definition/CREATE%20EXTERNAL%20CATALOG.md)。
-
 ### 参数说明
 
 #### catalog_name
 
-Hive Catalog 的名称。命名规则如下：
+Hive Catalog 的名称。命名要求如下：
 
-- 可以包含字母、数字 0 到 9 和下划线 (_)，并且必须以字母开头。
-- 长度不能超过 64 个字符。
+- 必须由字母 (a-z 或 A-Z)、数字 (0-9) 或下划线 (_) 组成，且只能以字母开头。
+- 总长度不能超过 1023 个字符。
+- Catalog 名称大小写敏感。
 
 #### comment
 
@@ -94,6 +94,16 @@ Hive Catalog 的描述。此参数为可选。
 #### type
 
 数据源的类型。设置为 `hive`。
+
+#### GeneralParams
+
+指定通用设置的一组参数。
+
+`GeneralParams` 包含如下参数。
+
+| 参数                      | 是否必须  | 说明                                                         |
+| ------------------------ | -------- | ------------------------------------------------------------ |
+| enable_recursive_listing | 否       | 指定 StarRocks 是否递归读取表或者分区目录（包括子目录）中文件的数据。取值范围：`true` 和 `false`。默认值：`false`。取值为 `true` 表示递归遍历，取值为 `false` 表示只读取表或者分区目录当前层级中文件的数据。 |
 
 #### MetastoreParams
 
