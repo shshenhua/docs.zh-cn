@@ -424,13 +424,13 @@ mysql> EXPLAIN SELECT
 - 查看当前数据仓库内所有异步物化视图。
 
   ```SQL
-  SHOW MATERIALIZED VIEWS;
+  SHOW MATERIALIZED VIEW;
   ```
 
 - 查看特定异步物化视图。
 
   ```SQL
-  SHOW MATERIALIZED VIEWS WHERE NAME = "order_mv";
+  SHOW MATERIALIZED VIEW WHERE NAME = "order_mv";
   ```
 
 - 通过名称匹配查看异步物化视图。
